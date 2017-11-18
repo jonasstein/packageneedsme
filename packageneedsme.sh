@@ -7,8 +7,7 @@
 # Repository: https://github.com/jonasstein/packageneedsme
 #
 declare -a INSTALLED  # declare an array
-INSTALLED=( $(EIX_LIMIT=0 eix --installed --in-overlay 0 --only-names) )
-
+INSTALLED=( $(qlist -RIC|grep gentoo| cut -f 1 -d":") )
 
 echo "These installed packages have no maintainer. The package is waiting for you:"
 for catpkg in "${INSTALLED[@]}"
