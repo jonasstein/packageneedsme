@@ -1,18 +1,21 @@
 #!/bin/bash
 # This script will list all installed packages on a gentoo system 
 # without maintainer or old EAPI.
-# depends on eix
+# depends on eix (and portage)
 # License: GPL-2
-# Author: Jonas Stein
+# Author: Jonas Stein (main script), Nils Freydank (tree path detection)
 # Repository: https://github.com/jonasstein/packageneedsme
 #
+
+portagetree="$(portageq get_repo_path / gentoo)"
+
 declare -a INSTALLED  # declare an array
 INSTALLED=( $(qlist -RIC|grep gentoo| cut -f 1 -d":") )
 
 echo "These installed packages have no maintainer. The package is waiting for you:"
 for catpkg in "${INSTALLED[@]}"
 do
-	grep -q "<!-- maintainer-needed -->" /usr/portage/$catpkg/metadata.xml && echo $catpkg
+	grep -q "<!-- maintainer-needed -->" "${portagetree}"/$catpkg/metadata.xml && echo $catpkg
 done
 
 echo 
