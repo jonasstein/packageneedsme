@@ -3,11 +3,14 @@
 # without maintainer or old EAPI.
 # depends on eix (and portage)
 # License: GPL-2
-# Author: Jonas Stein (main script), Nils Freydank (tree path detection)
+# Maintainer: Jonas Stein
 # Repository: https://github.com/jonasstein/packageneedsme
 #
+# Changelog and authors:
+# 2017-11-22 add tree path detection (Nils Freydank)
+# 2017-11-17 initial script (Jonas Stein)
 
-portagetree="$(portageq get_repo_path / gentoo)"
+MYPORTDIR="$(portageq get_repo_path / gentoo)"
 
 declare -a INSTALLED  # declare an array
 INSTALLED=( $(qlist -RIC|grep gentoo| cut -f 1 -d":") )
@@ -15,7 +18,7 @@ INSTALLED=( $(qlist -RIC|grep gentoo| cut -f 1 -d":") )
 echo "These installed packages have no maintainer. The package is waiting for you:"
 for catpkg in "${INSTALLED[@]}"
 do
-	grep -q "<!-- maintainer-needed -->" "${portagetree}"/$catpkg/metadata.xml && echo $catpkg
+	grep -q "<!-- maintainer-needed -->" "${MYPORTDIR}"/$catpkg/metadata.xml && echo $catpkg
 done
 
 echo 
@@ -40,4 +43,3 @@ for catpkg in "${INSTALLED[@]}"
 do
         echo "EAPI="3"   $catpkg"
 done
-
