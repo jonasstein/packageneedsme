@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script will list all installed packages on a gentoo system 
+# This script will list all installed packages on a gentoo system
 # without maintainer or old EAPI.
 # depends on eix (and portage)
 # License: GPL-2
@@ -9,6 +9,8 @@
 # Changelog and authors:
 # 2017-11-22 add tree path detection (Nils Freydank)
 # 2017-11-17 initial script (Jonas Stein)
+# 2018-12-08 update loop and tree EAPI instead of installed EAPI
+#	also use the parameter $1 to set maxEAPI to look at(5) 
 
 MYPORTDIR="$(portageq get_repo_path / gentoo)"
 
@@ -21,25 +23,19 @@ do
 	grep -q "<!-- maintainer-needed -->" "${MYPORTDIR}"/$catpkg/metadata.xml && echo $catpkg
 done
 
-echo 
+echo
 echo "These installed packages use a very old EAPI. You can prepare a PR:"
-INSTALLED=( $(EIX_LIMIT=0 eix --installed --in-overlay 0 --only-names --installed-eapi 0))
 
-for catpkg in "${INSTALLED[@]}"
-do
-	echo "EAPI="0"   $catpkg"
-done
+maxEAPI=${1:-5} # currently in 12/2018 EAPI 5 is deprecated
 
-INSTALLED=( $(EIX_LIMIT=0 eix --installed --in-overlay 0 --only-names --installed-eapi 2))
+for EAPI in $(seq 0 $maxEAPI); do
+	echo 
+	echo "Check for EAPI $EAPI:"
 
-for catpkg in "${INSTALLED[@]}"
-do
-        echo "EAPI="2"   $catpkg"
-done
+	INSTALLED=( $(EIX_LIMIT=0 eix --installed --in-overlay 0 --only-names --eapi $EAPI))
 
-INSTALLED=( $(EIX_LIMIT=0 eix --installed --in-overlay 0 --only-names --installed-eapi 3))
-
-for catpkg in "${INSTALLED[@]}"
-do
-        echo "EAPI="3"   $catpkg"
+	for catpkg in "${INSTALLED[@]}"
+	do
+		echo "EAPI=$EAPI   $catpkg"
+	done
 done
