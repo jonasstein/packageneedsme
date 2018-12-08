@@ -10,7 +10,7 @@
 # 2017-11-22 add tree path detection (Nils Freydank)
 # 2017-11-17 initial script (Jonas Stein)
 # 2018-12-08 update loop and tree EAPI instead of installed EAPI
-#	also use the parameter $1 to set maxEAPI to look at(5) 
+#	also use the parameter $1 to set maxEAPI to look at(5) (Ervin Peters)
 
 MYPORTDIR="$(portageq get_repo_path / gentoo)"
 
@@ -31,9 +31,7 @@ maxEAPI=${1:-5} # currently in 12/2018 EAPI 5 is deprecated
 for EAPI in $(seq 0 $maxEAPI); do
 	echo 
 	echo "Check for EAPI $EAPI:"
-
 	INSTALLED=( $(EIX_LIMIT=0 eix --installed --in-overlay 0 --only-names --eapi $EAPI))
-
 	for catpkg in "${INSTALLED[@]}"
 	do
 		echo "EAPI=$EAPI   $catpkg"
